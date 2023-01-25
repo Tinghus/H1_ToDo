@@ -43,7 +43,7 @@ namespace H1_ToDo.Classes
                     {
                         Console.WriteLine("Shortcuts | (f)ilter | (c)reate new |    (m)ark as done    | (e)dit | (d)elete | (q)uit |");
                     }
-                    else if (currentToDo != null)
+                    else if (currentToDo == null)
                     {
                         Console.WriteLine("Shortcuts | (f)ilter | (c)reate new | (m)ark as incomplete | (e)dit | (d)elete | (q)uit |");
                     }
