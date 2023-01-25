@@ -272,6 +272,7 @@ namespace H1_ToDo.Classes
 
                 case ConsoleKey.F:
                     ChangeFilterStatus();
+                    FindItemToHover(0);
                     ShowMenu();
                     return;
 
@@ -306,7 +307,60 @@ namespace H1_ToDo.Classes
 
             currentlySelectedLine += valueModifier;
             currentToDo = ToDo.ToDoList[currentlySelectedLine];
+
+            bool canContinue = FindItemToHover(valueModifier);
+
+            if (!canContinue)
+            {
+                currentToDo = null;
+                return;
+            }
+
             ShowMenu();
+        }
+
+        private bool FindItemToHover(int valueModifier)
+        {
+            if (valueModifier == 0)
+            {
+                valueModifier = 1;
+            }
+
+            bool hitLowerLimit = false, hitUpperLimit = false;
+
+            while (currentToDo.TaskIsDone == true && ShowDone == false)
+            {
+                if (currentlySelectedLine > 0 && valueModifier == -1)
+                {
+                    currentlySelectedLine += valueModifier;
+                    currentToDo = ToDo.ToDoList[currentlySelectedLine];
+                }
+                else if (currentlySelectedLine <= 0 && valueModifier == -1)
+                {
+                    hitLowerLimit = true;
+                    currentlySelectedLine = 0;
+                    valueModifier = 1;
+                }
+
+                if (currentlySelectedLine < ToDo.ToDoList.Count - 1 && valueModifier == +1)
+                {
+                    currentlySelectedLine += valueModifier;
+                    currentToDo = ToDo.ToDoList[currentlySelectedLine];
+                }
+                else if (currentlySelectedLine >= ToDo.ToDoList.Count - 1 && valueModifier == +1)
+                {
+                    currentlySelectedLine = ToDo.ToDoList.Count - 1;
+                    valueModifier = -1;
+                    hitUpperLimit = true;
+                }
+
+                if (hitLowerLimit && hitUpperLimit)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void EditHoveredItem()
