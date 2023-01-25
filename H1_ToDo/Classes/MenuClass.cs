@@ -225,13 +225,13 @@ namespace H1_ToDo.Classes
                 case ConsoleKey.D:
                     CurrentViewType = ViewType.DeleteView;
                     DeleteHoveredItem();
-                    break;
+                    return;
 
                 case ConsoleKey.E:
                     CurrentViewType = ViewType.EditView;
                     ShowMenu();
                     EditHoveredItem();
-                    break;
+                    return;
 
                 case ConsoleKey.Backspace:
                     CurrentViewType = ViewType.MainView;
@@ -284,13 +284,13 @@ namespace H1_ToDo.Classes
                 case ConsoleKey.D:
                     CurrentViewType = ViewType.DeleteView;
                     DeleteHoveredItem();
-                    break;
+                    return;
 
                 case ConsoleKey.E:
                     CurrentViewType = ViewType.EditView;
                     ShowMenu();
                     EditHoveredItem();
-                    break;
+                    return;
             }
         }
 
@@ -321,6 +321,9 @@ namespace H1_ToDo.Classes
 
         private bool FindItemToHover(int valueModifier)
         {
+            // When filter is set to true tasks which are marked "done" are no longer being displayed.
+            // We need to make sure that we are not targetting an invisble entry
+
             if (valueModifier == 0)
             {
                 valueModifier = 1;
@@ -368,7 +371,6 @@ namespace H1_ToDo.Classes
             ToDoClass.ToDoObject newToDo = ToDo.UpdateToDoTask(currentToDo);
             Console.Clear();
 
-
             string[] outputArray = {
                     $"Do you want to keep the changes you made to:",
                     currentToDo.Title ,
@@ -409,11 +411,13 @@ namespace H1_ToDo.Classes
 
         public void CenterMessage(string[] message, string? caller)
         {
+            // Used to center important messages in the console
+
             int startingPos = (Console.WindowHeight / 2) - (message.Length / 2);
 
             foreach (string messageText in message)
             {
-                if (messageText == currentToDo.Title && caller == "delete")
+                if (messageText == currentToDo.Title && caller == "delete") // When status is "delete" it is because we are trying to delete an entry so we need different color codes
                 {
                     Console.ForegroundColor = ConsoleColor.White;
                 }
