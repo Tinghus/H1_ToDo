@@ -24,6 +24,11 @@ namespace H1_ToDo.Classes
 
         public void LoadToDoList()
         {
+            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "todo.dat"))
+            {
+                return;
+            }
+
             string jsonData = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "todo.dat");
             ToDoList = JsonSerializer.Deserialize<List<ToDoObject>>(jsonData);
         }
