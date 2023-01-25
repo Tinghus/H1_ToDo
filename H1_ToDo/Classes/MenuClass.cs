@@ -34,6 +34,8 @@ namespace H1_ToDo.Classes
             switch (CurrentViewType)
             {
                 case ViewType.MainView:
+                    string filterText = ShowDone ? "off" : "on";
+
                     if (currentToDo == null && ToDo.ToDoList.Count > 0)
                     {
                         currentToDo = ToDo.ToDoList[currentlySelectedLine];
@@ -41,11 +43,11 @@ namespace H1_ToDo.Classes
 
                     if (currentToDo != null && currentToDo.TaskIsDone == false)
                     {
-                        Console.WriteLine("Shortcuts | (f)ilter | (c)reate new |    (m)ark as done    | (e)dit | (d)elete | (q)uit |");
+                        Console.WriteLine($"Shortcuts | (f)ilter[{filterText}] | (c)reate new |    (m)ark as done    | (e)dit | (d)elete | (q)uit |");
                     }
                     else
                     {
-                        Console.WriteLine("Shortcuts | (f)ilter | (c)reate new | (m)ark as incomplete | (e)dit | (d)elete | (q)uit |");
+                        Console.WriteLine($"Shortcuts | (f)ilter[{filterText}] | (c)reate new | (m)ark as incomplete | (e)dit | (d)elete | (q)uit |");
                     }
                     break;
 
@@ -268,6 +270,11 @@ namespace H1_ToDo.Classes
                     ChangeStatusOfHoveredItem();
                     break;
 
+                case ConsoleKey.F:
+                    ChangeFilterStatus();
+                    ShowMenu();
+                    return;
+
                 case ConsoleKey.C:
                     CurrentViewType = ViewType.CreateView;
                     ToDo.CreateNewToDoTask();
@@ -405,6 +412,11 @@ namespace H1_ToDo.Classes
                     break;
             }
 
+        }
+
+        private void ChangeFilterStatus()
+        {
+            ShowDone = ShowDone ? false : true;
         }
 
         private void ChangeStatusOfHoveredItem()
