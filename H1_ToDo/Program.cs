@@ -10,6 +10,8 @@ namespace H1_ToDo
 
         static void Main(string[] args)
         {
+
+            // Build references and prep the program to run
             Menu.ToDo = ToDo;
             ToDo.Menu = Menu;
             ToDo.LoadToDoList();
@@ -24,16 +26,8 @@ namespace H1_ToDo
                 Menu.ShowMenu();
                 Menu.MenuSelector();
             }
-
-
-
-            Console.ReadKey();
         }
 
-        private static void WriteInInfoArea(string input)
-        {
-
-        }
 
     }
 }

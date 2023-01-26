@@ -101,21 +101,25 @@ namespace H1_ToDo.Classes
                         continue;
                     }
 
-                    ApplyHoverEffect(i);
+                    ApplyHoverEffect(i); // Highlights the currently selected task for the user
 
+                    // If the deadline have passed and task is not completed we change the text to red
                     if (toDo.ToDoDate < DateTime.Now.Date && toDo.TaskIsDone == false)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
                     }
 
+                    // If task is done we set the text to green
                     if (toDo.TaskIsDone == true)
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
                     }
 
+                    // Output the general task information to the console
                     output = $"{toDo.Id.ToString().PadRight(5)}{toDo.ToDoDate.ToShortDateString().PadRight(12)}{toDo.Title.PadRight(30)}{toDo.Priority.PadRight(12)}{toDo.TaskIsDone}";
                     Console.WriteLine(output);
 
+                    // Sets the console colors. Could also be done with Reset.
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.Gray;
                 }
@@ -157,7 +161,7 @@ namespace H1_ToDo.Classes
                 };
 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
-                CenterMessage(outputArray, "delete");
+                CenterMessage(outputArray, "delete"); // This method centers the text on the screen long both vertical and horizontal axis
                 Console.ForegroundColor = ConsoleColor.Gray;
 
                 return;
@@ -183,6 +187,8 @@ namespace H1_ToDo.Classes
 
         private void ApplyHoverEffect(int currentItem)
         {
+            // Apply a highligt effect if task is currently in focus
+
             if (currentItem == currentlySelectedLine)
             {
                 Console.BackgroundColor = ConsoleColor.Blue;
@@ -193,6 +199,8 @@ namespace H1_ToDo.Classes
 
         private void AddLine()
         {
+            // Adds a horizontal line, used to visually seperate the menu from the information area
+
             for (int i = 0; i < Console.WindowWidth; i++)
             {
                 Console.Write("-");
@@ -204,6 +212,8 @@ namespace H1_ToDo.Classes
 
         public void MenuSelector()
         {
+            // Handles menu selection, can pass on the input to other methods
+
             ConsoleKeyInfo consoleKey = Console.ReadKey(true);
 
             switch (consoleKey.Key)
@@ -227,6 +237,10 @@ namespace H1_ToDo.Classes
                     DeleteHoveredItem();
                     return;
 
+                case ConsoleKey.M:
+                    ChangeStatusOfHoveredItem();
+                    return;
+
                 case ConsoleKey.E:
                     CurrentViewType = ViewType.EditView;
                     ShowMenu();
@@ -248,6 +262,8 @@ namespace H1_ToDo.Classes
 
         private void MenuSelectorMainView(ConsoleKeyInfo consoleKey)
         {
+            // Handles main menu selection. Could probably be combined with MenuSelector()
+
             switch (consoleKey.Key)
             {
                 case ConsoleKey.UpArrow:
@@ -264,10 +280,6 @@ namespace H1_ToDo.Classes
 
                 case ConsoleKey.Enter:
                     SelectHoveredItem();
-                    break;
-
-                case ConsoleKey.M:
-                    ChangeStatusOfHoveredItem();
                     break;
 
                 case ConsoleKey.F:
@@ -296,21 +308,23 @@ namespace H1_ToDo.Classes
 
         private void ChangeHoveredItem(int valueModifier)
         {
-            if (valueModifier == -1 && currentlySelectedLine == 0)
+            // Changes the currently selected task
+
+            if (valueModifier == -1 && currentlySelectedLine == 0) // We can not go below item 0
             {
                 return;
             }
-            if (valueModifier == 1 && currentlySelectedLine == ToDo.ToDoList.Count - 1)
+            if (valueModifier == 1 && currentlySelectedLine == ToDo.ToDoList.Count - 1) // We can not go past our last item
             {
                 return;
             }
 
-            currentlySelectedLine += valueModifier;
+            currentlySelectedLine += valueModifier; // Updates the selected line. Used to determine which line to highlight
             currentToDo = ToDo.ToDoList[currentlySelectedLine];
 
-            bool canContinue = FindItemToHover(valueModifier);
+            bool canContinue = FindItemToHover(valueModifier); // Ensure the item we are trying to hover is valid. If not it will determine the closest one
 
-            if (!canContinue)
+            if (!canContinue) // If no valid selection is found we return null
             {
                 currentToDo = null;
                 return;
@@ -331,39 +345,39 @@ namespace H1_ToDo.Classes
 
             bool hitLowerLimit = false, hitUpperLimit = false;
 
-            while (currentToDo.TaskIsDone == true && ShowDone == false)
+            while (currentToDo.TaskIsDone == true && ShowDone == false) // While currently selected task should not be shown
             {
-                if (currentlySelectedLine > 0 && valueModifier == -1)
+                if (currentlySelectedLine > 0 && valueModifier == -1) // Keeps momentum, so if you were going up on the list it will keep going up
                 {
                     currentlySelectedLine += valueModifier;
                     currentToDo = ToDo.ToDoList[currentlySelectedLine];
                 }
-                else if (currentlySelectedLine <= 0 && valueModifier == -1)
+                else if (currentlySelectedLine <= 0 && valueModifier == -1) // There is no more items in the current direction. So reset and start looking in the oposite direction
                 {
                     hitLowerLimit = true;
                     currentlySelectedLine = 0;
                     valueModifier = 1;
                 }
 
-                if (currentlySelectedLine < ToDo.ToDoList.Count - 1 && valueModifier == +1)
+                if (currentlySelectedLine < ToDo.ToDoList.Count - 1 && valueModifier == +1) // Keeps momentum, so if you were going up on the list it will keep going up
                 {
                     currentlySelectedLine += valueModifier;
                     currentToDo = ToDo.ToDoList[currentlySelectedLine];
                 }
-                else if (currentlySelectedLine >= ToDo.ToDoList.Count - 1 && valueModifier == +1)
+                else if (currentlySelectedLine >= ToDo.ToDoList.Count - 1 && valueModifier == +1) // There is no more items in the current direction. So reset and start looking in the oposite direction
                 {
                     currentlySelectedLine = ToDo.ToDoList.Count - 1;
                     valueModifier = -1;
                     hitUpperLimit = true;
                 }
 
-                if (hitLowerLimit && hitUpperLimit)
+                if (hitLowerLimit && hitUpperLimit) // If we have looked in both directions and have hit the limit we can assume there is no valid task to select
                 {
                     return false;
                 }
             }
 
-            return true;
+            return true; // We have found a valid selection so we return true
         }
 
         private void EditHoveredItem()
@@ -378,9 +392,9 @@ namespace H1_ToDo.Classes
                     "y/n?"
                 };
 
-            CenterMessage(outputArray, "");
+            CenterMessage(outputArray, ""); // Centers message on screen
 
-            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+            ConsoleKeyInfo consoleKey = Console.ReadKey(true); // User needs to confirm that they want to save the updated task
 
             switch (consoleKey.Key)
             {
@@ -411,9 +425,9 @@ namespace H1_ToDo.Classes
 
         public void CenterMessage(string[] message, string? caller)
         {
-            // Used to center important messages in the console
+            // Used to center text in the console
 
-            int startingPos = (Console.WindowHeight / 2) - (message.Length / 2);
+            int startingPos = (Console.WindowHeight / 2) - (message.Length / 2); //We start by putting the cursor in the middle of the screen. Then we move it depending on how many lines we need to write
 
             foreach (string messageText in message)
             {
@@ -438,7 +452,7 @@ namespace H1_ToDo.Classes
             CurrentViewType = ViewType.DeleteView;
             ShowMenu();
 
-            ConsoleKeyInfo consoleKey = Console.ReadKey(true);
+            ConsoleKeyInfo consoleKey = Console.ReadKey(true); // User needs to confirm that they want to delete the selected task
 
             switch (consoleKey.Key)
             {
@@ -474,17 +488,23 @@ namespace H1_ToDo.Classes
 
         private void ChangeFilterStatus()
         {
+            // Determines wether or not tasks that are marked "Done" will show up in the mainview
+
             ShowDone = ShowDone ? false : true;
         }
 
         private void ChangeStatusOfHoveredItem()
         {
+            // Switches the selected task between done and incomplete
+
             currentToDo.TaskIsDone = currentToDo.TaskIsDone ? false : true;
             ToDo.SaveToDoList();
             ShowMenu();
         }
         private void SelectHoveredItem()
         {
+            // Shows the details of the currently selected item.
+
             CurrentViewType = ViewType.Detailview;
             ShowMenu();
         }

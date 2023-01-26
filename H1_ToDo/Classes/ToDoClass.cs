@@ -15,16 +15,9 @@ namespace H1_ToDo.Classes
         public List<ToDoObject> ToDoList = new List<ToDoObject>();
         public MenuClass Menu;
 
-        public string ShowToDo(ToDoObject toDo)
-        {
-
-
-            return "";
-        }
-
         public void LoadToDoList()
         {
-            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "todo.dat"))
+            if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "todo.dat")) // If the file does not exist we return early to avoid tryin to deserialize a null string
             {
                 return;
             }
@@ -35,26 +28,31 @@ namespace H1_ToDo.Classes
 
         public void SaveToDoList()
         {
+            // Saves the state of our toDoList
+
             string jsonData = JsonSerializer.Serialize(ToDoList);
             File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "todo.dat", jsonData);
         }
 
         public int FindAvailableID()
         {
+            // Finds a unique identifier for our task and returns it as int
+
             if (ToDoList.Count == 0)
             {
                 return 0;
             }
 
-            int nextId = ToDoList.Max(id => id.Id) + 1;
+            int nextId = ToDoList.Max(id => id.Id) + 1; // Lambda function that will find the highest Id currently in use
 
             return nextId;
         }
 
         public void CreateNewToDoTask()
         {
+            //This handles the creation of new tasks
 
-            if (ToDoList.Count > 15)
+            if (ToDoList.Count > 15) // We currently do not support displaying multi page content. So we need to limit the amount of tasks.
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine("You have hit the limit of currently active tasks");
@@ -171,6 +169,8 @@ namespace H1_ToDo.Classes
 
         public ToDoObject UpdateToDoTask(ToDoObject oldToDo)
         {
+            // Will ask the user to update a specific task
+
             ToDoObject newToDo = new ToDoObject();
             string title, description, priority, repeatString;
             DateTime toDoDate;
@@ -200,7 +200,7 @@ namespace H1_ToDo.Classes
                 }
 
                 Console.SetCursorPosition(28, 17);
-                Console.Write(oldToDo.Title);
+                Console.Write(oldToDo.Title); // If the user doesn't input anything we will use the old value and display it to the user.
                 newToDo.Title = oldToDo.Title;
                 break;
 
@@ -228,7 +228,7 @@ namespace H1_ToDo.Classes
                 Console.SetCursorPosition(28, 19);
                 string toDoDateString = Console.ReadLine();
 
-                if (!string.IsNullOrWhiteSpace(toDoDateString) && toDoDateString.ToLower() == "today")
+                if (!string.IsNullOrWhiteSpace(toDoDateString) && toDoDateString.ToLower() == "today") // The user does not have to write out the entire date. We could also add "tomorrow", "this week" and "this month".
                 {
                     newToDo.ToDoDate = DateTime.Now;
                     break;
@@ -249,7 +249,7 @@ namespace H1_ToDo.Classes
             while (true)
             {
                 Console.SetCursorPosition(28, 20);
-                priority = Console.ReadLine();
+                priority = Console.ReadLine(); // We could use a readkey instead. But I got lazy
 
                 if (!string.IsNullOrWhiteSpace(priority))
                 {
